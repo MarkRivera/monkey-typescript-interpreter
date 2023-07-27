@@ -1,4 +1,4 @@
-import { ASSIGN, COMMA, EOF, ILLEGAL, LBRACE, LPAREN, PLUS, RBRACE, RPAREN, SEMICOLON, Token, TokenType } from "../token/token";
+import { ASSIGN, ASTERISK, BANG, COMMA, EOF, EQ, GT, ILLEGAL, LBRACE, LPAREN, LT, MINUS, NOT_EQ, PLUS, RBRACE, RPAREN, SEMICOLON, SLASH, Token, TokenType } from "../token/token";
 import { LookupIdent } from "../utils/LookupIdent";
 import { isDigit } from "../utils/isDigit";
 import { isLetter } from "../utils/isLetter";
@@ -12,6 +12,7 @@ interface Lexer {
   nextToken: () => Token;
   newToken: (type: TokenType, ch: string) => Token;
   readIdentifier: () => string;
+  readNumber: () => string;
   skipWhitespace: () => void;
 }
 
@@ -23,6 +24,14 @@ export class MonkeyLexer implements Lexer {
 
   constructor(input: string) {
     this.input = input;
+  }
+
+  peekChar(): string {
+    if (this.readPosition >= this.input.length) {
+      return "";
+    } else {
+      return this.input[this.readPosition];
+    }
   }
 
   readChar() {
@@ -67,7 +76,44 @@ export class MonkeyLexer implements Lexer {
     this.skipWhitespace();
     switch (this.ch) {
       case "=":
-        token = this.newToken(ASSIGN, this.ch);
+        if (this.peekChar() === "=") {
+          let char = this.ch;
+          this.readChar();
+
+          token = this.newToken(EQ, `${char}${this.ch}`);
+        } else {
+          token = this.newToken(ASSIGN, this.ch);
+        }
+
+        break;
+      case "+":
+        token = this.newToken(PLUS, this.ch);
+        break;
+      case "-":
+        token = this.newToken(MINUS, this.ch);
+        break;
+      case "!":
+        if (this.peekChar() === "=") {
+          let char = this.ch;
+          this.readChar();
+
+          token = this.newToken(NOT_EQ, `${char}${this.ch}`);
+        } else {
+          token = this.newToken(BANG, this.ch);
+        }
+
+        break;
+      case "/":
+        token = this.newToken(SLASH, this.ch);
+        break;
+      case "*":
+        token = this.newToken(ASTERISK, this.ch);
+        break;
+      case "<":
+        token = this.newToken(LT, this.ch);
+        break;
+      case ">":
+        token = this.newToken(GT, this.ch);
         break;
       case ";":
         token = this.newToken(SEMICOLON, this.ch);

@@ -1,8 +1,13 @@
-import { FUNCTION, IDENT, LET, TokenType } from "../token/token";
+import { ELSE, FALSE, FUNCTION, IDENT, IF, LET, RETURN, TRUE, TokenType } from "../token/token";
 
 let keywords: { [key: string]: TokenType } = {
   "fn": FUNCTION,
-  "let": LET
+  "let": LET,
+  "if": IF,
+  "else": ELSE,
+  "true": TRUE,
+  "false": FALSE,
+  "return": RETURN
 };
 
 export function LookupIdent(ident: string): TokenType {
